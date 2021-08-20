@@ -44,7 +44,8 @@ const makeBoard = (width = WIDTH, height = HEIGHT) => {
 
 const makeHtmlBoard = () => {
   // TODO: get "htmlBoard" variable from the item in HTML w/ID of "board"
-
+  const htmlBoard = document.querySelector('#board');
+  console.log(htmlBoard);
   // create the board's column-top as table row element
   // and have it listen for click events
   const top = document.createElement('tr');
@@ -64,13 +65,14 @@ const makeHtmlBoard = () => {
   for (let y = 0; y < HEIGHT; ++y) {
     const row = document.createElement("tr");
     for (let x = 0; x < WIDTH; ++x) {
-      const slot = document.createElement("td");
-      slot.setAttribute('id', `${y}-${x}`);
-      row.append(slot);
+      const cell = document.createElement("td");
+      cell.setAttribute('id', `${y}-${x}`);
+      row.append(cell);
     }
     htmlBoard.append(row);
   }
 }
+
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
@@ -153,6 +155,7 @@ const checkForWin = () => {
     }
   }
 }
+
 
 const board = makeBoard();
 makeHtmlBoard();

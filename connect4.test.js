@@ -1,8 +1,7 @@
 // unit tests for connect4.js
 
 
-
-describe('makeBoard tests', () => {
+describe('makeBoard unit tests', () => {
 
   it('should make a board with the default dimensions if no arguments are passed in', () => {
     const board = makeBoard();
@@ -82,7 +81,18 @@ describe('makeBoard tests', () => {
         expect(row.length).toEqual(WIDTH);
       }
     })
+  })
+})
+
+
+describe('makeHtmlBoard unit tests', () => {
+  it('should set htmlBoard to a table element with id board', () => {
+    makeHtmlBoard();
+
 
   })
+})
 
+afterEach(() => {
+  makeHtmlBoard.innerHTML = '';
 })
