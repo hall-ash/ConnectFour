@@ -7,16 +7,37 @@
 
 const WIDTH = 7;
 const HEIGHT = 6;
+const MIN_SIZE = 4; // min size for board width and height
 
 let currPlayer = 1; // active player: 1 or 2
-const board = []; // array of rows, each row is array of cells  (board[y][x])
+
+//const board = []; // array of rows, each row is array of cells  (board[y][x])
 
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
+ *    Each cell in the board is initialized to null.
+ *    The default values for board width and height are 7 and 6, respectively.
+ *    Arguments for width and height must be positive integers to modify 
+ *    board dimensions. 
  */
 
-const makeBoard = (width, height) => {
+const validateBoardDimension = (dimension, type) => {
+  dimension = parseInt(dimension);
+
+  if (!dimension) return type === 'width' ? WIDTH : HEIGHT; 
+  if (dimension < MIN_SIZE) return MIN_SIZE; 
+
+  return dimension; 
+}
+
+const makeBoard = (width = WIDTH, height = HEIGHT) => {
 // TODO: set "board" to empty HEIGHT x WIDTH matrix array
+  width = validateBoardDimension(width, 'width');
+  height = validateBoardDimension(height, 'height'); 
+  
+  return Array.from({ length: height }, () => 
+    Array.from({ length: width }, () => null)
+  );
 }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
@@ -31,7 +52,7 @@ const makeHtmlBoard = () => {
   top.addEventListener("click", handleClick);
 
   // create each column cell for the top of the board
-  for (const x = 0; x < WIDTH; ++x) {
+  for (let x = 0; x < WIDTH; ++x) {
     const headCell = document.createElement("td");
     headCell.setAttribute("id", x);
     top.append(headCell);
@@ -40,11 +61,11 @@ const makeHtmlBoard = () => {
 
 
   // create the slots for the board
-  for (const y = 0; y < HEIGHT; ++y) {
+  for (let y = 0; y < HEIGHT; ++y) {
     const row = document.createElement("tr");
-    for (const x = 0; x < WIDTH; ++x) {
+    for (let x = 0; x < WIDTH; ++x) {
       const slot = document.createElement("td");
-      slot.setAttribute('id', `${y}-${x}`));
+      slot.setAttribute('id', `${y}-${x}`);
       row.append(slot);
     }
     htmlBoard.append(row);
@@ -119,8 +140,8 @@ const checkForWin = () => {
 
   // TODO: read and understand this code. Add comments to help you.
 
-  for (const y = 0; y < HEIGHT; y++) {
-    for (const x = 0; x < WIDTH; x++) {
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < WIDTH; x++) {
       const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
       const vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
       const diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
@@ -133,5 +154,5 @@ const checkForWin = () => {
   }
 }
 
-makeBoard();
+const board = makeBoard();
 makeHtmlBoard();
