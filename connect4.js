@@ -78,10 +78,20 @@ const makeHtmlBoard = () => {
 
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
-
+// filled cells are given value of 1
+// empty cells have value of null
 const findSpotForCol = (x) => {
-  // TODO: write the real version of this, rather than always returning 0
-  return 0;
+
+  // check if all cells have been filled for column x
+  if (board[0][x]) return null;
+  
+  const topRowIndex = board.length - 1;
+  // find the empty row
+  for (let row = topRowIndex; row >= 0; --row) {
+    // cell row-x is empty
+    if (!board[row][x]) return row; 
+  }
+
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */

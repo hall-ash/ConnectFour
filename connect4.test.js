@@ -136,6 +136,60 @@ describe('makeHtmlBoard unit tests', () => {
   })
 })
 
+describe('findSpotForCol unit tests', () => {
+  beforeEach(() => {
+    board = makeBoard();
+  })
+
+  it('should return null if all cells in column x have been filled', () => {
+    // fill all cells in column 0
+    let col = 0;
+    for (row of board) {
+      row[col] = 1;
+    }
+
+    expect(findSpotForCol(col)).toBeNull();
+  })
+
+  it('should return the bottom cell (row = height - 1) in column x if the column is empty', () => {
+    // confirm that column 0 is empty
+    let col = 0;
+    for (row of board) {
+      expect(row[col]).toBeNull(); 
+    }
+
+    let bottom = board.length - 1;
+    expect(findSpotForCol(col)).toEqual(bottom)
+  })
+
+  it('should return the top cell (row = 0) in column x if the column has [height - 1] pieces', () => {
+    // fill all cells in col 0 except topmost
+    let col = 0; 
+    for (row = board.length - 1; row > 0; --row) {
+      board[row][col] = 1;
+    }
+
+    expect(findSpotForCol(col)).toEqual(0);
+  })
+
+  it('should return the top cell in column x if the column is partially filled', () => {
+    // fill column halfway
+    let col = 0;
+    let halfWayRow = Math.floor(board.length / 2);
+    for (row = board.length - 1; row >= halfWayRow; --row) {
+      board[row][col] = 1;
+    }
+
+    let topEmptyCell = halfWayRow - 1;
+
+    expect(findSpotForCol(col)).toEqual(topEmptyCell);
+  })
+
+  afterEach(() => {
+    board = [];
+  })
+})
+
 
 
 
