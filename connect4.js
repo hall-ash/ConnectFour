@@ -91,13 +91,19 @@ const findSpotForCol = (x) => {
     // cell row-x is empty
     if (!board[row][x]) return row; 
   }
-
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
 
 const placeInTable = (y, x) => {
-  // TODO: make a div and insert into correct table cell
+  // create a div for the game piece
+  const gamePiece = document.createElement('div');
+  gamePiece.setAttribute('class', 'game-piece');
+
+  // add it to the table cell
+  const tableCell = document.getElementById(`${y}-${x}`);
+
+  tableCell.append(gamePiece);
 }
 
 /** endGame: announce game end */

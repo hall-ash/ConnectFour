@@ -190,6 +190,41 @@ describe('findSpotForCol unit tests', () => {
   })
 })
 
+describe('placeInTable unit tests', () => {
+  beforeEach(() => {
+    board = makeBoard();
+    makeHtmlBoard();
+  })
+
+  it('should create and add a gamePiece div to the given table cell', () => {
+ 
+    // test 4 corner cells and middle cell
+    const bottomRow = board.length - 1;
+    const rightMostCol = board[0].length - 1;
+    let cellsToTest = [
+      [0, 0],
+      [0, rightMostCol],
+      [bottomRow, 0],
+      [bottomRow, rightMostCol],
+      [Math.floor(bottomRow / 2), Math.floor(rightMostCol / 2)],
+    ]
+
+    for (cell of cellsToTest) {
+      let x = cell[1];
+      let y = cell[0];
+      let tableCell = document.getElementById(`${y}-${x}`);
+      
+      expect(tableCell.children.length).toEqual(0);
+      placeInTable(y, x);
+      expect(tableCell.firstElementChild.className).toBe('game-piece');
+    }
+  })
+
+  afterEach(() => {
+    document.querySelector('#board').innerHTML = '';
+  })
+})
+
 
 
 
