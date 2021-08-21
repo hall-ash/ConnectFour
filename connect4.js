@@ -5,8 +5,10 @@
  * board fills (tie)
  */
 
-const WIDTH = 7;
-const HEIGHT = 6;
+
+// default board dimensions
+const DEFAULT_WIDTH = 7;
+const DEFAULT_HEIGHT = 6;
 const MIN_SIZE = 4; // min size for board width and height
 
 let currPlayer = 1; // active player: 1 or 2
@@ -24,13 +26,13 @@ let currPlayer = 1; // active player: 1 or 2
 const validateBoardDimension = (dimension, type) => {
   dimension = parseInt(dimension);
 
-  if (!dimension) return type === 'width' ? WIDTH : HEIGHT; 
+  if (!dimension) return type === 'width' ? DEFAULT_WIDTH : DEFAULT_HEIGHT; 
   if (dimension < MIN_SIZE) return MIN_SIZE; 
 
   return dimension; 
 }
 
-const makeBoard = (width = WIDTH, height = HEIGHT) => {
+const makeBoard = (width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT) => {
 // TODO: set "board" to empty HEIGHT x WIDTH matrix array
   width = validateBoardDimension(width, 'width');
   height = validateBoardDimension(height, 'height'); 
@@ -45,15 +47,15 @@ const makeBoard = (width = WIDTH, height = HEIGHT) => {
 const makeHtmlBoard = () => {
   // TODO: get "htmlBoard" variable from the item in HTML w/ID of "board"
   const htmlBoard = document.querySelector('#board');
-  console.log(htmlBoard);
-  // create the board's column-top as table row element
+
+  // create the board's column-top where players can 'drop in' pieces
   // and have it listen for click events
   const top = document.createElement('tr');
   top.setAttribute("id", "column-top");
   top.addEventListener("click", handleClick);
 
-  // create each column cell for the top of the board
-  for (let x = 0; x < WIDTH; ++x) {
+  // create each 'drop in' cell for the top of the board
+  for (let x = 0; x < board[0].length; ++x) {
     const headCell = document.createElement("td");
     headCell.setAttribute("id", x);
     top.append(headCell);
@@ -61,10 +63,11 @@ const makeHtmlBoard = () => {
   htmlBoard.append(top);
 
 
-  // create the slots for the board
-  for (let y = 0; y < HEIGHT; ++y) {
+  // create the playable cells for the board
+  for (let y = 0; y < board.length; ++y) {
     const row = document.createElement("tr");
-    for (let x = 0; x < WIDTH; ++x) {
+    row.setAttribute('class', 'playable');
+    for (let x = 0; x < board[0].length; ++x) {
       const cell = document.createElement("td");
       cell.setAttribute('id', `${y}-${x}`);
       row.append(cell);
@@ -133,17 +136,17 @@ const checkForWin = () => {
     return cells.every(
       ([y, x]) =>
         y >= 0 &&
-        y < HEIGHT &&
+        y < board.length &&
         x >= 0 &&
-        x < WIDTH &&
+        x < board[0].length &&
         board[y][x] === currPlayer
     );
   }
 
   // TODO: read and understand this code. Add comments to help you.
 
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x++) {
+  for (let y = 0; y < board.length; y++) {
+    for (let x = 0; x < board[0].length; x++) {
       const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
       const vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
       const diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
@@ -157,5 +160,5 @@ const checkForWin = () => {
 }
 
 
-const board = makeBoard();
-makeHtmlBoard();
+// const board = makeBoard();
+// makeHtmlBoard();
