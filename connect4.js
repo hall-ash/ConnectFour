@@ -15,7 +15,7 @@ let currPlayer; // active player: 1 or 2
 let board; // array of rows, each row is array of cells  (board[y][x])
 let maxMoves; // max moves from both players until board is completely filled
 let numMoves; // current total number of moves from both players 
-let gameWon;
+let gameWon; // boolean indicating whether game has been won
 
 const initGame = (restartGame = false, width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT) => {
   currPlayer = 1;
@@ -25,17 +25,21 @@ const initGame = (restartGame = false, width = DEFAULT_WIDTH, height = DEFAULT_H
   gameWon = false;
   
   if (restartGame) {
+    // remove the end game message after starting a new game
     const endMsg = document.getElementById('end-msg');
     endMsg.remove();
-  
-    clearHtmlBoard(); // clear html board if game had already been played
+
+     // clear the html board
+    clearHtmlBoard();
   }
   else {
+    // brand new game, build the html board
     makeHtmlBoard();
   }
  
 } 
 
+// remove player1 and player2 pieces from the html board
 const clearHtmlBoard = () => {
   const playerPieces = document.querySelectorAll('.player1, .player2')
   for (piece of playerPieces) {
@@ -44,14 +48,13 @@ const clearHtmlBoard = () => {
 }
 
 
-/** makeBoard: create in-JS board structure:
- *    board = array of rows, each row is array of cells  (board[y][x])
- *    Each cell in the board is initialized to null.
- *    The default values for board width and height are 7 and 6, respectively.
- *    Arguments for width and height must be positive integers to modify 
- *    board dimensions. 
- */
 
+// Ensure board dimensions are integers greater than MIN_SIZE 
+// and return the validated dimension. 
+// Params: dimension - board dimension length
+//         type - dimension type (height or width)
+// If dimension is not a valid integer, set it to a default value (DEFAULT_WIDTH or DEFAULT_HEIGHT).
+// If the dimension is a valid integer and less than MIN_SIZE, set the dimension to MIN_SIZE.
 const validateBoardDimension = (dimension, type) => {
   dimension = parseInt(dimension);
 
@@ -61,11 +64,20 @@ const validateBoardDimension = (dimension, type) => {
   return dimension; 
 }
 
+/** makeBoard: create in-JS board structure:
+ *    board = array of rows, each row is array of cells  (board[y][x])
+ *    Each cell in the board is initialized to null.
+ *    The default values for board width and height are 7 and 6, respectively.
+ *    Arguments for width and height must be positive integers to modify 
+ *    board dimensions. 
+ */
 const makeBoard = (width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT) => {
-// TODO: set "board" to empty HEIGHT x WIDTH matrix array
+  // validate board width and height
   width = validateBoardDimension(width, 'width');
   height = validateBoardDimension(height, 'height'); 
   
+  // build an array of height arrays, each array will have a length of width
+  // and set all values to null
   return Array.from({ length: height }, () => 
     Array.from({ length: width }, () => null)
   );
@@ -137,29 +149,35 @@ const placeInTable = (y, x) => {
 }
 
 
-/** endGame: announce game end */
+/** endGame: announce game end and display a button to restart a new game
+*/
 
 const endGame = (msg) => {
+  // create a div for the end game message
+  // containing the msg text
   const endMsg = document.createElement('div');
   endMsg.setAttribute('id', 'end-msg');
   endMsg.innerText = msg;
   endMsg.append(document.createElement('br'));
+
+  // create a new game button
   const newGameBtn = document.createElement('button');
   newGameBtn.innerText = 'New Game';
+  // initialize a new game on click of new game button
   newGameBtn.addEventListener('click', () => {
     initGame(true);
   });
   endMsg.append(newGameBtn);
  
   document.getElementById('game').append(endMsg);
-  
-
 }
 
 /** handleClick: handle click of column top to play piece */
 
 const handleClick = (evt) => {
-  if (gameWon || evt.target.id === 'column-top') return; // don't allow players to add additonal pieces if game has been won
+  // don't allow players to add additonal pieces if game has been won
+  // or if the target is the column-top element
+  if (gameWon || evt.target.id === 'column-top') return; 
 
   // get x from ID of clicked cell
   const x = evt.target.id;
@@ -170,8 +188,7 @@ const handleClick = (evt) => {
     return;
   }
 
-  // place piece in board and add to HTML table
-  // TODO: add line to update in-memory board
+  // place currPlayer piece in board, add to HTML table, and increment numMoves
   placeInTable(y, x);
   board[y][x] = currPlayer;
   numMoves++; 
@@ -182,11 +199,10 @@ const handleClick = (evt) => {
     return endGame(`Player ${currPlayer} won!`);
   }
 
-  // TODO: check if all cells in board are filled; if so call, call endGame
+  // check if max number of moves have been played; if so call, call endGame
   if (numMoves === maxMoves) return endGame('Tie game!');
 
-  // switch players
-  // TODO: switch currPlayer 1 <-> 2
+  // switch players after every turn
   currPlayer === 1 ? currPlayer = 2 : currPlayer = 1; 
 }
 
@@ -209,7 +225,6 @@ const checkForWin = () => {
     );
   }
 
-  // TODO: read and understand this code. Add comments to help you.
   // check each cell in the board 
   for (let y = 0; y < board.length; y++) {
     for (let x = 0; x < board[0].length; x++) {
