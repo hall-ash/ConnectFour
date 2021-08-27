@@ -216,7 +216,7 @@ describe('placeInTable unit tests', () => {
       
       expect(tableCell.children.length).toEqual(0);
       placeInTable(y, x);
-      expect(tableCell.firstElementChild.className).toBe('game-piece');
+      expect(tableCell.firstElementChild.className).toBe('piece');
     }
   })
 
@@ -224,7 +224,4 @@ describe('placeInTable unit tests', () => {
     document.querySelector('#board').innerHTML = '';
   })
 })
-
-
-
 
