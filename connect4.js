@@ -13,10 +13,14 @@ class ConnectFour {
   DEFAULT_HEIGHT = 6;
   MIN_SIZE = 4; // min size for board width and height
 
-  // board and current board dimensions
+  // current board dimensions
   height;
   width;
-  board; // array of rows, each row is array of cells  (board[y][x])
+
+  // board is implemented with a 2d array, 
+  // board[y][x] represents a cell at row y, column x,
+  // top left-most cell = board[0][0]
+  board; 
 
   // game status 
   currPlayer; // active player: 1 or 2
@@ -187,7 +191,7 @@ class ConnectFour {
     this.numMoves++; 
     
     // check for win, if win display end game message and restart game button
-    if (this.checkForWin()) {
+    if (this.checkForWin(y, x)) {
       this.gameWon = true;
       return this.endGame(`Player ${this.currPlayer} won!`);
     }
@@ -200,41 +204,38 @@ class ConnectFour {
   }
 
   // Helper method for checkForWin
-  // Check four cells to see if they're all color of current player
-  //  - cells: list of four (y, x) cells
-  //  - returns true if all are legal coordinates & all match currPlayer
-  _win(cells) {
+  // Check adjacent cells to see if they're all color of current player
+  //  - cells: list of 7 adjacent (y, x) cells
+  //  - returns true if all are legal coordinates & at least 4 in a row match currPlayer
+  checkForMatchesInRow(cells) {
+    let matchesInRow = 0; // number of adjacent pieces that match currPlayer 
 
-    return cells.every(
-      ([y, x]) =>
-        y >= 0 &&
-        y < this.height &&
-        x >= 0 &&
-        x < this.width &&
-        this.board[y][x] === this.currPlayer
-    );
+    for (const [y, x] of cells) {
+      const matchingPiece = y >= 0 && y < this.height && x >= 0 && x < this.width && this.board[y][x] === this.currPlayer;
+      matchingPiece ? matchesInRow++ : matchesInRow = 0; // reset count to 0 if not a match
+      if (matchesInRow >= 4) return true;
+    }
+    return false;
   }
 
   /** checkForWin: check board cell-by-cell for "does a win start here?" */
-  checkForWin(){
- 
-    // check each cell in the board 
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        // find the 3 cells adjacent to it in the horizontal, vertical, and both diagonal directions
-        const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-        const vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
-        const diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
-        const diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
+  checkForWin(y, x){
+    // need at least 7 moves for a win
+    if (this.numMoves < 7) return false;
+  
+    // given cell with y, x coords create array of cells adjacent to cell [y, x] for all directions
+    const horiz = Array.from({ length: 7 }, () => [y, x - 3]).map(([y, x], i) => [y, x + i]);
+    const vert = Array.from({ length: 7 }, () => [y - 3, x]).map(([y, x], i) => [y + i, x]);
+    const diagDR = Array.from({ length: 7 }, () => [y - 3, x - 3]).map(([y, x], i) => [y + i, x + i]);
+    const diagDL = Array.from({ length: 7 }, () => [y + 3, x - 3]).map(([y, x], i) => [y - i, x + i]);
 
-        // if any group of 4 adjacent cells all match the currPlayer, declare a win
-        if (this._win(horiz) || this._win(vert) || this._win(diagDR) || this._win(diagDL)) {
-          return true;
-        }
-      }
+    // if at least 4 cells in a row from any direction match currPlayer , declare a win
+    if (this.checkForMatchesInRow(horiz) || this.checkForMatchesInRow(vert) || this.checkForMatchesInRow(diagDR) || this.checkForMatchesInRow(diagDL)) {
+      return true;
     }
   }
 
+  // restart the game: reset game status info, create a new in-memory board, and clear the html board from the prev game
   restartGame() {
     // reset fields
     this.currPlayer = 1;
@@ -252,9 +253,7 @@ class ConnectFour {
     this.clearHtmlBoard();
   }
 
-  // end ConnectFour class body
-}
+} // end ConnectFour class body
 
 const connectFour = new ConnectFour();
 connectFour.play();
-
