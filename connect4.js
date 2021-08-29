@@ -67,7 +67,7 @@ class ConnectFour {
 
   // remove player1 and player2 pieces from the html board
   clearHtmlBoard(){
-    const playerPieces = document.querySelectorAll('.player1, .player2');
+    const playerPieces = document.querySelectorAll('.piece');
   
     [...playerPieces].map(piece => piece.className = '');
 
@@ -223,13 +223,13 @@ class ConnectFour {
     // need at least 7 moves for a win
     if (this.numMoves < 7) return false;
   
-    // given cell with y, x coords create array of cells adjacent to cell [y, x] for all directions
+    // given cell [y, x] create array of cells adjacent to cell [y, x] for all directions
     const horiz = Array.from({ length: 7 }, () => [y, x - 3]).map(([y, x], i) => [y, x + i]);
     const vert = Array.from({ length: 7 }, () => [y - 3, x]).map(([y, x], i) => [y + i, x]);
     const diagDR = Array.from({ length: 7 }, () => [y - 3, x - 3]).map(([y, x], i) => [y + i, x + i]);
     const diagDL = Array.from({ length: 7 }, () => [y + 3, x - 3]).map(([y, x], i) => [y - i, x + i]);
 
-    // if at least 4 cells in a row from any direction match currPlayer , declare a win
+    // if at least 4 cells in a row from any direction match currPlayer, declare a win
     if (this.checkForMatchesInRow(horiz) || this.checkForMatchesInRow(vert) || this.checkForMatchesInRow(diagDR) || this.checkForMatchesInRow(diagDL)) {
       return true;
     }
