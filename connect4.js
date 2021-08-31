@@ -142,11 +142,36 @@ class ConnectFour {
     // create a div for the game piece
     const gamePiece = document.createElement('div');
     gamePiece.setAttribute('class', 'piece');
-    this.currPlayer === 1 ? gamePiece.classList.add('player1') : gamePiece.classList.add('player2');
+    //this.currPlayer === 1 ? gamePiece.classList.add('player1') : gamePiece.classList.add('player2');
+    gamePiece.classList.add(`player${this.currPlayer}`);
+    
+    // initial distance from top
+    gamePiece.style.top = '5px';
+
+    // calculates the final style attr 'top' value
+    // y is the row
+    // returns the number of pixels from top 
+    const getFinalTopVal = (y) => {
+      return 59 + 56.5 * y;
+    };
+
+    // function to increment the value of style attr 'top'
+    const incrementTopVal = (gamePiece) => {
+      let curTopVal = parseInt(gamePiece.style.top.slice(0, -2));
+      gamePiece.style.top = `${++curTopVal}px`;
+    } 
+
+    // increments the 'top' value of the gamepiece every 1ms
+    const intervalID = setInterval(() => {
+      incrementTopVal(gamePiece);
+      if (gamePiece.style.top === `${Math.floor(getFinalTopVal(y))}px`) {
+        gamePiece.style.top = `${getFinalTopVal(y)}px`;
+        clearInterval(intervalID);
+      }
+    }, 1)
 
     // add it to the table cell
     const tableCell = document.getElementById(`${y}-${x}`);
-
     tableCell.append(gamePiece);
   }
 
@@ -174,10 +199,10 @@ class ConnectFour {
   handleClick(evt) {
     // don't allow players to add additonal pieces if game has been won
     // or if the target is the column-top element
-    if (this.gameWon || evt.target.id === 'column-top') return; 
+    if (this.gameWon) return; 
 
     // get x from ID of clicked cell
-    const x = evt.target.id;
+    const x = +evt.target.id;
 
     // get next spot in column (if none, ignore click)
     const y = this.findSpotForCol(x);
@@ -197,15 +222,15 @@ class ConnectFour {
     }
 
     // check if max number of moves have been played; if so call, call endGame
-    if (this.numMoves === this.maxMoves) return endGame('Tie game!');
+    if (this.numMoves === this.maxMoves) return this.endGame('Tie game!');
 
     // switch players after every turn
-    this.currPlayer === 1 ? this.currPlayer = 2 : this.currPlayer = 1; 
+    this.currPlayer = this.currPlayer === 1 ? 2 : 1; 
   }
 
   // Helper method for checkForWin
   // Check adjacent cells to see if they're all color of current player
-  //  - cells: list of 7 adjacent (y, x) cells
+  //  - cells: array of 7 adjacent (y, x) cells
   //  - returns true if all are legal coordinates & at least 4 in a row match currPlayer
   checkForMatchesInRow(cells) {
     let matchesInRow = 0; // number of adjacent pieces that match currPlayer 
@@ -215,6 +240,10 @@ class ConnectFour {
       matchingPiece ? matchesInRow++ : matchesInRow = 0; // reset count to 0 if not a match
       if (matchesInRow >= 4) return true;
     }
+
+    // cells.every(
+    //   y >= 0 && y < this.height && x >= 0 && x < this.width && this.board[y][x] === this.currPlayer;
+    // )
     return false;
   }
 
